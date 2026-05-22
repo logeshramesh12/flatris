@@ -1,7 +1,11 @@
 node_modules
+web/.next
 .git
-.next
-dist
-coverage
-Dockerfile
-README.md
+.github
+flow-typed
+*.test.js
+*.md
+flatris.gif
+flatris.png
+.travis.yml
+azure-pipelines.yml

@@ -1,20 +1,53 @@
-name: Docker CI Test
+name: Deploy to ECS Fargate
 
 on:
   push:
     branches:
       - master
 
+env:
+  AWS_REGION: us-east-1
+  ECR_REPOSITORY: flatris-game
+  ECS_CLUSTER: mygame
+  ECS_SERVICE: game-service
+  CONTAINER_NAME: appcontainer
+
 jobs:
-  docker-test:
+  deploy:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Code
+      - name: Checkout source code
         uses: actions/checkout@v4
 
-      - name: Build Docker Image
-        run: docker build -t flatris:v1 .
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
 
-      - name: Show Docker Images
-        run: docker images
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build Docker image
+        run: |
+          docker build -t $ECR_REPOSITORY .
+
+      - name: Tag Docker image
+        run: |
+          docker tag $ECR_REPOSITORY:latest \
+          ${{ steps.login-ecr.outputs.registry }}/$ECR_REPOSITORY:latest
+
+      - name: Push Docker image to ECR
+        run: |
+          docker push \
+          ${{ steps.login-ecr.outputs.registry }}/$ECR_REPOSITORY:latest
+
+      - name: Force new ECS deployment
+        run: |
+          aws ecs update-service \
+            --cluster $ECS_CLUSTER \
+            --service $ECS_SERVICE \
+            --force-new-deployment

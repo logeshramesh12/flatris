@@ -21,6 +21,8 @@ ENV NODE_ENV=production
 
 COPY --from=builder /app ./
 
+RUN echo "Build completed"
+
 EXPOSE 3000
 
 CMD ["yarn", "start"]
