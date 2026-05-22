@@ -9,7 +9,7 @@ env:
   AWS_REGION: us-east-1
   ECR_REPOSITORY: flatris-game
   ECS_CLUSTER: mygame
-  ECS_SERVICE: game-service
+  ECS_SERVICE: game-service-1
   TASK_DEFINITION: game
 
 jobs:
