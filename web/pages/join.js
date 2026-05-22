@@ -72,7 +72,7 @@ class JoinPage extends Component<Props> {
 
     return (
       <Layout>
-        <Title>Play Flatris</Title>
+        <Title>Play Flatris new title</Title>
         <ReactReduxContext.Consumer>
           {({ store }) => (
             <SocketProvider store={store}>
